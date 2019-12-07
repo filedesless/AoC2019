@@ -5,6 +5,7 @@ use std::path::Path;
 
 pub mod day01;
 pub mod day02;
+pub mod day03;
 
 pub fn get_input(challenge: u32) -> String {
     let s = format!("input/{:02}.txt", challenge);
@@ -26,6 +27,7 @@ pub fn get_solvers() -> BTreeMap<u32, [fn(&String) -> String; 2]> {
     let mut solvers = BTreeMap::new();
     solvers.insert(1, [day01::solve01a, day01::solve01b]);
     solvers.insert(2, [day02::solve02a, day02::solve02b]);
+    solvers.insert(3, [day03::solve03a, day03::solve03b]);
     solvers
 }
 
@@ -38,6 +40,7 @@ mod solved_tests {
         let answers = [
             (1, [String::from("3331849"), String::from("4994898")]),
             (2, [String::from("5110675"), String::from("4847")]),
+            (3, [String::from("1017"), String::from("11432")]),
         ];
         let solvers = get_solvers();
         for (day, expectations) in &answers {
