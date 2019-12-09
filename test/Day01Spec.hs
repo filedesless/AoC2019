@@ -1,8 +1,10 @@
 module Day01Spec (spec) where
 
+import Test.Hspec
+
+import Cache
 import Day01
 import Day01Impl
-import Test.Hspec
 
 spec :: Spec
 spec = do
@@ -15,7 +17,7 @@ spec = do
 
   describe "day01a" $
     it "should have the correct answer" $
-      day01a <$> readFile "input/01.txt" `shouldReturn` "3331849"
+      day01a <$> readFile "input/01.txt" >>= verifyAndStore 1 'a' "3331849"
 
   describe "fuel'" $
     it "should work with given examples" $ do
@@ -24,5 +26,5 @@ spec = do
       fuel' 100756 `shouldBe` 50346
 
   describe "day01b" $
-    it "should have the correct answer" $ do
-      day01b <$> (readFile "input/01.txt") `shouldReturn` "4994898"
+    it "should have the correct answer" $
+      day01b <$> readFile "input/01.txt" >>= verifyAndStore 1 'b' "4994898"

@@ -1,10 +1,12 @@
 module Day02Spec (spec) where
 
-import Data.Sequence
 import Control.Monad.State
+import Data.Sequence
+import Test.Hspec
+
+import Cache
 import Day02
 import Day02Impl
-import Test.Hspec
 
 mem1 :: Memory
 mem1 = fromList [1,9,10,3,2,3,11,0,99,30,40,50]
@@ -32,4 +34,8 @@ spec = do
 
   describe "day02a" $
     it "should have the correct answer" $
-      day02a <$> readFile "input/02.txt" `shouldReturn` "5110675"
+      day02a <$> readFile "input/02.txt" >>= verifyAndStore 2 'a' "5110675"
+
+  describe "day02b" $
+    it "should have the correct answer" $
+      day02b <$> readFile "input/02.txt" >>= verifyAndStore 2 'b' "4847"

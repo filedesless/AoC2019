@@ -1,4 +1,4 @@
-module Day01 where
+module Day01(day01a, day01b) where
 
 import Day01Impl
 

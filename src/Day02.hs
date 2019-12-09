@@ -1,10 +1,11 @@
 module Day02(day02a, day02b) where
 
-import Day02Impl
-import Data.List.Split
 import Control.Monad.State
-import Data.Sequence
 import Data.Foldable
+import Data.List.Split
+import Data.Sequence
+
+import Day02Impl
 
 initial :: String -> Seq Int
 initial = fromList . map read . splitOn "," . head . lines
