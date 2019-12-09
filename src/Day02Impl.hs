@@ -21,7 +21,7 @@ eval (Add triplet) = modify $ compute (+) triplet
 eval (Mul triplet) = modify $ compute (*) triplet
 
 getOperands :: Memory -> Int -> Maybe Triplet
-getOperands mem pc= do
+getOperands mem pc = do
   op1 <- mem !? (pc + 1)
   op2 <- mem !? (pc + 2)
   dst <- mem !? (pc + 3)
