@@ -1,3 +1,4 @@
 /target
 **/*.rs.bk
 .stack-work/
+Aoc2019.cabal
