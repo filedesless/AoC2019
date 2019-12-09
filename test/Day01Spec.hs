@@ -14,8 +14,8 @@ spec = do
       fuel 100756 `shouldBe` 33583
 
   describe "day01a" $
-    it "should have the correct answer" $ do
-      day01a <$> (readFile "input/01.txt") `shouldReturn` "3331849"
+    it "should have the correct answer" $
+      day01a <$> readFile "input/01.txt" `shouldReturn` "3331849"
 
   describe "fuel'" $
     it "should work with given examples" $ do

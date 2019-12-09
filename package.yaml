@@ -22,6 +22,9 @@ dependencies:
 - base >= 4.7 && < 5
 - hspec
 - QuickCheck
+- containers
+- mtl
+- split
 
 library:
   source-dirs: src
