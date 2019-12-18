@@ -6,10 +6,12 @@ import Text.Printf (printf)
 import Cache
 import Day01
 import Day02
+import Day03
 
 solvers :: [[String -> String]]
 solvers = [ [day01a, day01b]
-          , [day02a, day02b] ]
+          , [day02a, day02b]
+          , [day03a] ]
 
 main :: IO ()
 main = do
