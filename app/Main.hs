@@ -11,7 +11,7 @@ import Day03
 solvers :: [[String -> String]]
 solvers = [ [day01a, day01b]
           , [day02a, day02b]
-          , [day03a] ]
+          , [day03a, day03b] ]
 
 main :: IO ()
 main = do
