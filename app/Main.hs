@@ -7,11 +7,13 @@ import Cache
 import Day01
 import Day02
 import Day03
+import Day04
 
 solvers :: [[String -> String]]
 solvers = [ [day01a, day01b]
           , [day02a, day02b]
-          , [day03a, day03b] ]
+          , [day03a, day03b]
+          , [day04a] ]
 
 main :: IO ()
 main = do
