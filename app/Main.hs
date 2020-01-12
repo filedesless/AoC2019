@@ -13,7 +13,7 @@ solvers :: [[String -> String]]
 solvers = [ [day01a, day01b]
           , [day02a, day02b]
           , [day03a, day03b]
-          , [day04a] ]
+          , [day04a, day04b] ]
 
 main :: IO ()
 main = do
