@@ -7,11 +7,12 @@ import Data.Sequence
 
 import Day02Impl
 
-initial :: String -> Seq Int
-initial = fromList . map read . splitOn "," . head . lines
+initial :: Int -> Int -> String -> Computer
+initial i j s = ([], [], update 1 i $ update 2 j mem, 0)
+  where mem = fromList . map read . splitOn "," . head $ lines s
 
 simulate :: Int -> Int -> String -> Int
-simulate i j = head . toList . evalState (run 0) . update 1 i . update 2 j . initial
+simulate i j = head . toList . evalState run . initial i j
 
 day02a :: String -> String
 day02a = show . simulate 12 2

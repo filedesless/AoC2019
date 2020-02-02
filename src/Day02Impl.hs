@@ -4,34 +4,48 @@ import Data.Sequence
 import Control.Monad.State
 import Control.Applicative
 
-type Memory = Seq Int
-type Triplet = (Int, Int, Int)
-type BinaryOp = (Int -> Int -> Int)
-
 data OpCode
   = Add Triplet
   | Mul Triplet
+data Operand = Pos Int | Imm Int
+
+type Memory = Seq Int
+type Triplet = (Operand, Operand, Int)
+type BinaryOp = (Int -> Int -> Int)
+type Input = [Int]
+type Output = [Int]
+type Computer = (Input, Output, Memory, Int)
+
+fetch :: Memory -> Operand -> Maybe Int
+fetch mem (Pos i) = mem !? i
+fetch _ (Imm i) = Just i
 
 compute :: BinaryOp -> Triplet -> Memory -> Memory
-compute f (op1, op2, dst) mem = maybe mem upd $ liftA2 f (mem !? op1) (mem !? op2)
+compute f (op1, op2, dst) mem =
+  maybe mem upd $ liftA2 f (fetch mem op1) (fetch mem op2)
   where upd s = update dst s mem
 
-eval :: OpCode -> State Memory ()
-eval (Add triplet) = modify $ compute (+) triplet
-eval (Mul triplet) = modify $ compute (*) triplet
+eval :: OpCode -> State Computer ()
+eval (Add triplet) =
+  modify (\(input, output, mem, pc) ->
+            (input, output, compute (+) triplet mem, pc + 4))
+eval (Mul triplet) =
+  modify (\(input, output, mem, pc) ->
+            (input, output, compute (*) triplet mem, pc + 4))
 
-getOperands :: Memory -> Int -> Maybe Triplet
-getOperands mem pc = do
+getBinaryOperands :: Memory -> Int -> Maybe Triplet
+getBinaryOperands mem pc = do
   op1 <- mem !? (pc + 1)
   op2 <- mem !? (pc + 2)
   dst <- mem !? (pc + 3)
-  return (op1, op2, dst)
+  return (Pos op1, Pos op2, dst)
 
-run :: Int -> State Memory Memory
-run pc = do
-  mem <- get
-  let res = eval <$> case mem !? pc of
-        Just 1 -> Add <$> getOperands mem pc
-        Just 2 -> Mul <$> getOperands mem pc
-        _ -> Nothing
-  maybe get (\s -> s >> run (pc + 4)) res
+run :: State Computer Memory
+run = do
+  (_, _, mem, pc) <- get
+  let stepi (Just 1) = Add <$> getBinaryOperands mem pc
+      stepi (Just 2) = Mul <$> getBinaryOperands mem pc
+      stepi _ = Nothing
+  case eval <$> stepi (mem !? pc) of
+    Just s -> s >> run
+    Nothing -> gets (\(_, _, m, _) -> m)
