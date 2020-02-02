@@ -4,19 +4,18 @@ import Data.Sequence
 import Control.Monad.State
 import Control.Applicative
 
-data OpCode
-  = Add Triplet
-  | Mul Triplet
-data Operand = Pos Int | Imm Int
+type Addr = Int
+type Value = Int
+data Operand = Pos Addr | Imm Value
+type Triplet = (Operand, Operand, Addr)
+data OpCode = Add Triplet | Mul Triplet | Str Addr | Out Operand
+type Memory = Seq Value
+type BinaryOp = (Value -> Value -> Value)
+type Input = [Value]
+type Output = [Value]
+type Computer = (Input, Output, Memory, Addr)
 
-type Memory = Seq Int
-type Triplet = (Operand, Operand, Int)
-type BinaryOp = (Int -> Int -> Int)
-type Input = [Int]
-type Output = [Int]
-type Computer = (Input, Output, Memory, Int)
-
-fetch :: Memory -> Operand -> Maybe Int
+fetch :: Memory -> Operand -> Maybe Value
 fetch mem (Pos i) = mem !? i
 fetch _ (Imm i) = Just i
 
@@ -33,7 +32,7 @@ eval (Mul triplet) =
   modify (\(input, output, mem, pc) ->
             (input, output, compute (*) triplet mem, pc + 4))
 
-getBinaryOperands :: Memory -> Int -> Maybe Triplet
+getBinaryOperands :: Memory -> Addr -> Maybe Triplet
 getBinaryOperands mem pc = do
   op1 <- mem !? (pc + 1)
   op2 <- mem !? (pc + 2)
