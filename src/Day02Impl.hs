@@ -31,6 +31,12 @@ eval (Add triplet) =
 eval (Mul triplet) =
   modify (\(input, output, mem, pc) ->
             (input, output, compute (*) triplet mem, pc + 4))
+eval (Str i) =
+  modify (\(input, output, mem, pc) ->
+            (tail input, output, update i (head input) mem, pc + 2))
+eval (Out op) =
+  modify (\(input, output, mem, pc) -> let Just i = fetch mem op in
+            (input, i : output, mem, pc + 2))
 
 getBinaryOperands :: Memory -> Addr -> Maybe Triplet
 getBinaryOperands mem pc = do
@@ -44,6 +50,8 @@ run = do
   (_, _, mem, pc) <- get
   let stepi (Just 1) = Add <$> getBinaryOperands mem pc
       stepi (Just 2) = Mul <$> getBinaryOperands mem pc
+      stepi (Just 3) = Str <$> mem !? succ pc
+      stepi (Just 4) = Out . Pos <$> mem !? succ pc
       stepi _ = Nothing
   case eval <$> stepi (mem !? pc) of
     Just s -> s >> run
