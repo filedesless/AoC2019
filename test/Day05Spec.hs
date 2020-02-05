@@ -49,9 +49,9 @@ spec = do
     it "should parse operand modes correctly" $
       parseOp (fromList [1002,4,3,4]) 0 `shouldBe` Just (Mul (Pos 4, Imm 3, 4))
 
-  -- describe "day05a" $
-  --   it "should have the correct answer" $
-  --     day05a <$> readFile "input/05.txt" >>= verifyAndStore 4 'a' "2050"
+  describe "day05a" $
+    it "should have the correct answer" $
+      day05a <$> readFile "input/05.txt" >>= verifyAndStore 5 'a' "9938601"
 
   -- describe "day05b" $
   --   it "should have the correct answer" $

@@ -8,12 +8,14 @@ import Day01
 import Day02
 import Day03
 import Day04
+import Day05
 
 solvers :: [[String -> String]]
 solvers = [ [day01a, day01b]
           , [day02a, day02b]
           , [day03a, day03b]
-          , [day04a, day04b] ]
+          , [day04a, day04b]
+          , [day05a, day05b] ]
 
 main :: IO ()
 main = do
