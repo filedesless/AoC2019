@@ -15,7 +15,6 @@ type BinaryOp = (Value -> Value -> Value)
 type Input = [Value]
 type Output = [Value]
 type Computer = (Input, Output, Memory, Addr)
-data OpMode = Position | Immediate
 
 fetch :: Memory -> Operand -> Maybe Value
 fetch mem (Pos i) = mem !? i
@@ -41,24 +40,32 @@ eval (Out op) = Just $
             (input, i : output, mem, pc + 2))
 eval Halt = Nothing
 
-getBinaryOperands :: Memory -> Addr -> Maybe Triplet
-getBinaryOperands mem pc = do
+getBinaryOperands :: Memory -> Addr -> (Value -> Operand) -> (Value -> Operand)
+                  -> Maybe Triplet
+getBinaryOperands mem pc m1 m2 = do
   op1 <- mem !? (pc + 1)
   op2 <- mem !? (pc + 2)
   dst <- mem !? (pc + 3)
-  return (Pos op1, Pos op2, dst)
+  return (m1 op1, m2 op2, dst)
 
-parseOp :: Memory -> Addr -> OpCode
-parseOp = undefined
+parseOp :: Memory -> Addr -> Maybe OpCode
+parseOp mem pc = do
+  word <- mem !? pc
+  let (_:_:argModes) = getMode <$> Prelude.reverse (show word) ++ repeat '0'
+  case word `mod` 100 of
+    1 -> Add <$> getBinaryOperands mem pc (head argModes) (argModes !! 1)
+    2 -> Mul <$> getBinaryOperands mem pc (head argModes) (argModes !! 1)
+    3 -> Str <$> mem !? succ pc
+    4 -> let next_word = succ pc in
+           Out . head argModes <$> mem !? next_word
+    99 -> Just Halt
+    _ -> Nothing
+  where getMode '1' = Imm
+        getMode  _  = Pos
 
 run :: State Computer Memory
 run = do
   (_, _, mem, pc) <- get
-  let stepi (Just 1) = Add <$> getBinaryOperands mem pc
-      stepi (Just 2) = Mul <$> getBinaryOperands mem pc
-      stepi (Just 3) = Str <$> mem !? succ pc
-      stepi (Just 4) = Out . Pos <$> mem !? succ pc
-      stepi _ = Nothing
-  case stepi (mem !? pc) >>= eval of
+  case parseOp mem pc >>= eval of
     Just s -> s >> run
     Nothing -> gets (\(_, _, m, _) -> m)

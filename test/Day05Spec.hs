@@ -38,16 +38,16 @@ spec = do
 
   describe "parseOp" $ do
     it "should parse old opcodes correctly" $ do
-      parseOp (fromList [1,9,10,3]) 0 `shouldBe` Add (Pos 9, Pos 10, 3)
-      parseOp (fromList [2,3,11,0]) 0 `shouldBe` Mul (Pos 3, Pos 11, 0)
-      parseOp (fromList [99]) 0 `shouldBe` Halt
+      parseOp (fromList [1,9,10,3]) 0 `shouldBe` Just (Add (Pos 9, Pos 10, 3))
+      parseOp (fromList [2,3,11,0]) 0 `shouldBe` Just (Mul (Pos 3, Pos 11, 0))
+      parseOp (fromList [99]) 0 `shouldBe` Just Halt
 
     it "should parse new opcodes correctly" $ do
-      parseOp (fromList [3, 0]) 0 `shouldBe` Str 0
-      parseOp (fromList [4, 0]) 0 `shouldBe` Out (Pos 0)
+      parseOp (fromList [3, 0]) 0 `shouldBe` Just (Str 0)
+      parseOp (fromList [4, 0]) 0 `shouldBe` Just (Out (Pos 0))
 
     it "should parse operand modes correctly" $
-      parseOp (fromList [1002,4,3,4]) 0 `shouldBe` Mul (Pos 4, Imm 3, 4)
+      parseOp (fromList [1002,4,3,4]) 0 `shouldBe` Just (Mul (Pos 4, Imm 3, 4))
 
   -- describe "day05a" $
   --   it "should have the correct answer" $
