@@ -25,19 +25,18 @@ compute f (op1, op2, dst) mem =
   maybe mem upd $ liftA2 f (fetch mem op1) (fetch mem op2)
   where upd s = update dst s mem
 
+arithmetic :: (Memory -> Memory) -> (Addr -> Addr) -> State Computer ()
+arithmetic fmem fpc = modify (\(i, o, mem, pc) -> (i, o, fmem mem, fpc pc))
+
 eval :: OpCode -> Maybe (State Computer ())
-eval (Add triplet) = Just $
-  modify (\(input, output, mem, pc) ->
-            (input, output, compute (+) triplet mem, pc + 4))
-eval (Mul triplet) = Just $
-  modify (\(input, output, mem, pc) ->
-            (input, output, compute (*) triplet mem, pc + 4))
-eval (Str i) = Just $
-  modify (\(input, output, mem, pc) ->
-            (tail input, output, update i (head input) mem, pc + 2))
-eval (Out op) = Just $
-  modify (\(input, output, mem, pc) -> let Just i = fetch mem op in
-            (input, i : output, mem, pc + 2))
+eval (Add triplet) = Just $ arithmetic (compute (+) triplet) (+ 4)
+eval (Mul triplet) = Just $ arithmetic (compute (*) triplet) (+ 4)
+eval (Str i) = Just $ modify
+  (\(input, output, mem, pc) ->
+      (tail input, output, update i (head input) mem, pc + 2))
+eval (Out op) = Just $ modify
+  (\(input, output, mem, pc) -> let Just i = fetch mem op in
+      (input, i : output, mem, pc + 2))
 eval Halt = Nothing
 
 getBinaryOperands :: Memory -> Addr -> (Value -> Operand) -> (Value -> Operand)
